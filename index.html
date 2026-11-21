@@ -3,11 +3,35 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>哔哔啵啵 · 把一句话变成小人说话声</title>
+<!--
+MIT License
+
+Copyright (c) 2026 hakihakii (Lumoswitch)
+GitHub icon from Bootstrap Icons: Copyright (c) 2019-2024 The Bootstrap Authors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
 <style>
   :root { --ink: #16244A; --yellow: #FFD84D; --red: #FF4D5E; }
   * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; background: #FFF6E4 radial-gradient(#E9D9B8 2px, transparent 3px) 0 0 / 28px 28px; color: var(--ink); font: 17px/1.6 -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; display: grid; place-items: center; padding: 24px; }
-  main { width: min(720px, 100%); background: #fff; border: 5px solid var(--ink); border-radius: 28px; box-shadow: 0 10px 0 var(--ink); padding: 28px; }
+  body { margin: 0; min-height: 100vh; min-height: 100svh; background: #FFF6E4 radial-gradient(#E9D9B8 2px, transparent 3px) 0 0 / 28px 28px; color: var(--ink); font: 17px/1.6 -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; display: flex; flex-direction: column; align-items: center; padding: 76px 24px 0; }
+  main { flex: none; margin-block: auto; width: min(720px, 100%); background: #fff; border: 5px solid var(--ink); border-radius: 28px; box-shadow: 0 10px 0 var(--ink); padding: 28px; }
   h1 { margin: 0 0 4px; font-size: 40px; line-height: 1.2; }
   h1 mark { background: var(--yellow); color: var(--red); border-radius: 10px; padding: 0 8px; }
   p { margin: 6px 0 18px; color: #525C78; }
@@ -22,11 +46,77 @@
   canvas { width: 100%; height: 120px; margin-top: 18px; border: 4px solid var(--ink); border-radius: 16px; background: #12173F; display: block; }
   ul { margin: 18px 0 0; padding-left: 20px; color: #525C78; }
   code { background: #F1F3FA; border-radius: 6px; padding: 1px 6px; }
+
+  .floating { position: fixed; z-index: 2; top: 16px; right: 24px; display: flex; align-items: start; gap: 4px; }
+  .icon { color: #121826; display: grid; width: 44px; height: 44px; place-items: center; padding: 0; border-radius: 50%; cursor: pointer; list-style: none; text-decoration: none; }
+  .icon::-webkit-details-marker { display: none; }
+  .icon:hover svg { transform: translateY(-1px); }
+  .icon:focus-visible, .floating a:focus-visible, footer a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .popover { position: absolute; right: 1px; top: calc(100% + 6px); width: min(248px, calc(100vw - 32px)); padding: 16px 18px 12px; border: 1px solid #dbd5c8; border-radius: 14px; box-shadow: 0 5px 20px #16244a13; background: #fffdf9; }
+  .popover h2 { font-size: 18px; line-height: 1.4; margin: 0; }
+  .popover a { color: var(--ink); display: flex; justify-content: space-between; align-items: center; text-decoration: none; }
+  .popover a::after { content: "↗"; font: 14px/1 Arial,sans-serif; color: #626878; }
+  .popover a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .popover p { margin: 6px 0 10px; font-size: 13px; line-height: 1.6; color: #555d6e; }
+  .popover nav { padding-top: 5px; border-top: 1px solid #e4dfd4; }
+  .popover nav a { min-height: 36px; font-size: 14px; }
+  footer { display: flex; flex: none; justify-content: center; align-items: end; min-height: 76px; padding: 14px 0; color: #645e53; }
+  footer small { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0 8px; padding: 0 6px; background: #FFF6E4; font-size: 12px; }
+  footer a { padding-block: 4px; color: inherit; text-underline-offset: 3px; }
+  @media (max-width: 740px) {
+    body { padding: 66px 16px 0; }
+    .floating { position: absolute; top: 9px; right: 12px; }
+    main { padding: 20px; border-width: 4px; }
+    h1 { font-size: clamp(25px, 6.7vw, 36px); }
+    h1 mark { display: inline-block; }
+    textarea { font-size: 19px; }
+    .row { gap: 11px 14px; }
+    footer { min-height: 64px; }
+  }
+  @media (min-width: 741px) { .row { gap: 10px; } .row button { padding-inline: 17px; } }
+  @media (max-width: 520px) {
+    .row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: end; }
+    .row label { font-size: 15px; }
+    .row select, .row input { display: block; width: 100%; height: 39px; margin: 3px 0 0; }
+    .row select { padding: 2px 4px; font-size: 15px; border-width: 2px; }
+    .row button { padding: 7px 3px; font-size: 17px; }
+  }
 </style>
+
+<nav class="floating" aria-label="项目链接">
+  <a class="icon" href="https://github.com/hakihakii/bibibobo" target="_blank" rel="noopener noreferrer" aria-label="GitHub 源码" title="GitHub 源码">
+    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" aria-hidden="true" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/>
+    </svg>
+  </a>
+  <details id="brand-links">
+    <summary class="icon" aria-label="哈基科技 · 作者与产品" title="哈基科技 · 作者与产品">
+      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 1024 1024" aria-hidden="true">
+        <rect x="100" y="100" width="824" height="824" rx="190" fill="#121826" />
+        <g transform="translate(236 244) scale(5.5)">
+          <path d="M45.4 11 8.3 86.7h72.6L67 59.2h-4l-3.8-10.5 3.9-4-17.7-33.7Z" fill="none" stroke="#ffffff" stroke-width="4.7" stroke-linecap="square" stroke-linejoin="miter" />
+          <path d="m5.3 48.7 16.1 1.8v3.1L5.3 52v-3.3Z" fill="#ffffff" />
+          <path d="m63.5 48.7 31.5-17.4V42l-30.5 8.5-1-1.8Z" fill="#00B7FF" />
+          <path d="m64.8 50.6 30.2-6.5V54l-28.9-.1-1.3-3.3Z" fill="#FF2C7D" />
+          <path d="m66.8 56.2 28.2.2v9.2l-26.9-6.9-1.3-2.5Z" fill="#FFE600" />
+          <path d="m70.4 60.2 24.6 7.2v9.8L72.7 63l-2.3-2.8Z" fill="#DDF6CF" />
+        </g>
+      </svg>
+    </summary>
+    <section class="popover" aria-label="关于作者">
+      <h2><a href="https://www.hakihakii.com/about" target="_blank" rel="noopener noreferrer">哈基科技</a></h2>
+      <p>大肥鱼和路墨的说话声，来自我们制作的《路墨小剧场》。</p>
+      <nav aria-label="产品与作品">
+        <a href="https://lumoswitch.com/" target="_blank" rel="noopener noreferrer">路墨 Lumoswitch 官网</a>
+        <a href="https://space.bilibili.com/3707062397700195" target="_blank" rel="noopener noreferrer">去 B 站看小剧场</a>
+      </nav>
+    </section>
+  </details>
+</nav>
 <main>
   <h1>把一句话变成<mark>哔哔啵啵</mark></h1>
   <p>没有录音，没有 AI 配音。一条锯齿波、两个滤波器，一个字一声。</p>
-  <textarea id="text">今天吃白饭？没饭了！真的没饭了……</textarea>
+  <textarea id="text" aria-label="输入台词">今天吃白饭？没饭了！真的没饭了……</textarea>
   <div class="row">
     <label>声线 <select id="voice"><option value="fish">大肥鱼（高）</option><option value="lumo">路墨（低）</option></select></label>
     <label>语速 <input id="step" type="range" min="0.08" max="0.3" step="0.01" value="0.13"></label>
@@ -42,6 +132,13 @@
     <li>一个汉字一声，一串英文或数字算一声。</li>
   </ul>
 </main>
+<footer>
+  <small>
+    <span>© 2026 hakihakii (Lumoswitch)</span>
+    <span aria-hidden="true">·</span>
+    <a href="https://github.com/hakihakii/bibibobo/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT 开源协议</a>
+  </small>
+</footer>
 <script type="module">
   // 下面这一段是 bibibobo.js 的原样拷贝（由 node build.mjs 生成），这样双击打开这个文件也能用。
   /* bibibobo:begin */
@@ -144,6 +241,21 @@ function toWav(samples, sampleRate = 44100) {
   return new Uint8Array(buf);
 }
   /* bibibobo:end */
+
+  const brandLinks = document.querySelector('#brand-links');
+  document.addEventListener('pointerdown', event => {
+    if (!brandLinks.contains(event.target)) brandLinks.open = false;
+  });
+  document.addEventListener('focusin', event => {
+    if (!brandLinks.contains(event.target)) brandLinks.open = false;
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && brandLinks.open) {
+      brandLinks.open = false;
+      brandLinks.querySelector('summary').focus();
+    }
+  });
+
   const $ = (id) => document.getElementById(id);
   const player = $('player');
   let playbackUrl, playbackId = 0;
